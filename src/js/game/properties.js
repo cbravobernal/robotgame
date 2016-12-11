@@ -1,12 +1,12 @@
 var npmProperties = require('../../../package.json');
 
 module.exports =
-  { title: 'Kill that f****** robot'
+  { title: 'Kill that robot'
   , description: npmProperties.description
   , port: 3017
   , liveReloadPort: 3018
-  , mute: false
-  , showStats: true
+  , mute: true
+  , showStats: false
   , size:
     { x: 800
     , y: 600
