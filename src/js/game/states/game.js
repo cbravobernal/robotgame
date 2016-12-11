@@ -4,9 +4,11 @@ var platforms;
 var player;
 var cursors;
 var fruits;
-var score = 0;
-var scoreText;
 var bullets;
+var enemy;
+var enemyLife = 9999999;
+var enemyText;
+var damage = 1;
 game.create = function () {
   this.game.physics.startSystem(Phaser.Physics.ARCADE);
   var background = this.game.add.image(0,0, 'background');
@@ -35,7 +37,7 @@ game.create = function () {
   player.animations.add('right', [3, 4], 10, true);
   player.animations.add('idle', [2, 2, 2, 2, 5, 2, 2, 2, 2], 4, true);
   cursors = game.input.keyboard.createCursorKeys();
-  scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+  enemyText = game.add.text(game.world.width - 350, 16, 'Enemy Life: ' + enemyLife, { fontSize: '32px', fill: '#000' });
   fruits = game.add.group();
 
   fruits.enableBody = true;
@@ -53,22 +55,37 @@ game.create = function () {
 
     //  Let gravity do its thing
     fruit.body.gravity.y = 200;
-
+    fruit.angle += Math.random() * 100;
     //  This just gives each star a slightly random bounce value
     fruit.body.bounce.y = 0.7 + Math.random() * 0.2;
   }
+
+  //Enemy
+
+  enemy = game.add.sprite(game.world.width - 100, game.world.height - 400, 'enemy');
+  game.physics.arcade.enable(enemy);
+  enemy.enableBody = true;
+  enemy.body.gravity.y = 1000;
+  enemy.animations.add('enemy-idle', [0, 0, 0, 0, 1, 0, 0, 0, 0], 5);
+  enemy.animations.add('enemy-hurt', [0, 2], 60);
+  enemy.body.collideWorldBounds = true;
 };
 
 game.update = function() {
   game.physics.arcade.collide(player, platforms);
   game.physics.arcade.collide(fruits, platforms);
+  game.physics.arcade.collide(enemy, platforms);
+  game.physics.arcade.collide(enemy, fruits, receiveFruitHostia);
+  game.physics.arcade.collide(enemy, bullets, receiveBulletHostia, null, this);
   game.physics.arcade.overlap(bullets, platforms, breakBullet, null, this);
   game.physics.arcade.overlap(player, fruits, collectFruit, null, this);
   game.physics.arcade.overlap(bullets, fruits, breakFruit, null, this);
   //  Reset the players velocity (movement)
   //  Reset the players velocity (movement)
   player.body.velocity.x = 0;
-
+  // Enemy
+  game.time.events.loop(Phaser.Timer.SECOND * 5, moveDroid, this);
+  game.time.events.loop(Phaser.Timer.SECOND * 3, enemyShootLeft, this);
   if (cursors.left.isDown)
   {
     //  Move to the left
@@ -114,18 +131,15 @@ function getRandomInt(min, max) {
 }
 
 function collectFruit (player, fruit) {
-
   // Removes the star from the screen
   fruit.kill();
-
-  score += 10;
-  scoreText.text = 'Score: ' + score;
+  damage += 10;
 
 }
 
 function shootRight() {
   player.animations.play('right');
-  for (var j = 0; j < 6; j++)
+  for (var j = 0; j < 1; j++)
   {
     var bullet = bullets.create(player.x+30, player.y + 9 , 'bullet');
     bullet.body.velocity.x = 300;
@@ -133,20 +147,48 @@ function shootRight() {
 }
 function shootLeft() {
   player.animations.play('left');
-  for (var j = 0; j < 6; j++)
+  for (var j = 0; j < 1; j++)
   {
     var bullet = bullets.create(player.x, player.y + 9 , 'bullet');
     bullet.body.velocity.x = -300;
+  }
+}
+function enemyShootLeft() {
+  for (var j = 0; j < 1; j++)
+  {
+    var enemybullet = bullets.create(enemy.x, enemy.y + 50 , 'enemybullet');
+    enemybullet.body.velocity.x = -100;
   }
 }
 
 function breakFruit(bullet, fruit) {
   bullet.kill();
   fruit.kill();
-  score -= 10;
-  scoreText.text = 'Score: ' + score;
 }
 
 function breakBullet(bullet, platform) {
   bullet.kill();
+}
+function moveDroid() {
+  droidmover = game.rnd.integerInRange(1, 3);
+  enemy.animations.play('enemy-idle');
+  if (droidmover == 1) {
+    enemy.body.velocity.x = 10;
+  } else if (droidmover == 2) {
+    enemy.body.velocity.x = -10;
+  } else {
+    enemy.body.velocity.x = 0;
+  }
+}
+
+function receiveFruitHostia(enemy, fruit) {
+  fruit.kill();
+  enemy.animations.play('enemy-hurt');
+}
+
+function receiveBulletHostia(enemy, bullet) {
+  bullet.kill();
+  enemyLife -= damage;
+  enemyText.text = 'Enemy Life: ' + enemyLife;
+  enemy.animations.play('enemy-hurt');
 }

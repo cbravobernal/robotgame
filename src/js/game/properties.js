@@ -1,7 +1,7 @@
 var npmProperties = require('../../../package.json');
 
 module.exports =
-  { title: 'Phaser JS Boilerplate'
+  { title: 'Kill that f****** robot'
   , description: npmProperties.description
   , port: 3017
   , liveReloadPort: 3018
