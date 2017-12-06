@@ -24,8 +24,6 @@ game.create = function () {
   ground.body.immovable = true;
   var ledge = platforms.create(200, 50, 'platform');
   ledge.body.immovable = true;
-  var ledge = platforms.create(100, 500, 'platform');
-  ledge.body.immovable = true;
   var ledge = platforms.create(300, 400, 'platform');
   ledge.body.immovable = true;
   var ledge = platforms.create(400, 250, 'platform');
@@ -80,9 +78,9 @@ game.update = function() {
   game.physics.arcade.collide(player, platforms);
   game.physics.arcade.collide(fruits, platforms);
   game.physics.arcade.collide(enemy, platforms);
-  game.physics.arcade.collide(enemy, fruits, receiveFruitHostia);
-  game.physics.arcade.collide(enemy, bullets, receiveBulletHostia, null, this);
-  game.physics.arcade.collide(player, bullets, receiveBulletEnemyHostia, null, this);
+  game.physics.arcade.collide(enemy, fruits, receiveFruitHit);
+  game.physics.arcade.collide(enemy, bullets, receiveBulletHit, null, this);
+  game.physics.arcade.collide(player, bullets, receiveBulletEnemyHit, null, this);
   game.physics.arcade.overlap(bullets, platforms, breakBullet, null, this);
   game.physics.arcade.overlap(player, fruits, collectFruit, null, this);
   game.physics.arcade.overlap(bullets, fruits, breakFruit, null, this);
@@ -195,11 +193,11 @@ function moveDroid() {
   }
 }
 
-function receiveFruitHostia(enemy, fruit) {
+function receiveFruitHit(enemy, fruit) {
   fruit.kill();
 }
 
-function receiveBulletHostia(enemy, bullet) {
+function receiveBulletHit(enemy, bullet) {
   bullet.kill();
   enemyLife -= damage;
   enemyText.text = 'Enemy Life: ' + enemyLife;
@@ -212,7 +210,7 @@ function receiveBulletHostia(enemy, bullet) {
   }
 }
 
-function receiveBulletEnemyHostia(player, bullet) {
+function receiveBulletEnemyHit(player, bullet) {
   bullet.kill();
   yourLife -= 1;
   yourLifeText.text = 'Your Life: ' + yourLife;

@@ -8,6 +8,7 @@ preloader.preload = function () {
   this.game.load.image('bullet', 'images/bullet.png');
   this.game.load.image('enemybullet', 'images/enemybullet.png');
   this.game.load.image('ground', 'images/ground.png');
+  this.game.load.image('menda', 'images/menda.png');
   this.game.load.spritesheet('enemy', 'images/enemy.png', 100,200);
 };
 
